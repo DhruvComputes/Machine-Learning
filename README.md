@@ -33,25 +33,25 @@ A multiclass Logistic Regression classifier implemented with scikit-learn using 
 ### 2. K-Nearest Neighbors (KNN)
 The notebook first evaluates a KNN classifier with `n_neighbors=5`. It also contains a `Pipeline` combining `StandardScaler` and `KNeighborsClassifier`, with `GridSearchCV` testing `k` values of 3, 5, 7, and 9 using 5-fold cross-validation and accuracy as the selection metric.
 
-For the pipeline experiment, the best parameter recorded in the notebook is `k=9`, with a mean cross-validation accuracy of approximately `0.983`.
+After updating the train-test split to use `stratify=y` and rerunning the notebook, the pipeline's best parameter is `k=3`, with a mean cross-validation accuracy of approximately `0.9489`.
 
 ### 3. Gaussian Naive Bayes
 A Gaussian Naive Bayes classifier implemented using scikit-learn's `GaussianNB`.
 
 ## Recorded Test Results
 
-The saved notebook outputs report the following results for the 30-row test set:
+The following results are from the notebooks after the train-test split was updated to use `stratify=y` and the notebooks were rerun. The test set contains 30 observations (10 from each Iris species).
 
 | Model / experiment | Test accuracy | Class-wise recall (Setosa, Versicolor, Virginica) |
 |---|---:|---|
-| Logistic Regression | 93.33% | 1.00, 0.90, 0.89 |
-| KNN (`k=5`, unscaled notebook experiment) | 93.33% | 1.00, 0.90, 0.89 |
-| Gaussian Naive Bayes | 96.67% | 1.00, 1.00, 0.89 |
-| KNN Pipeline + GridSearchCV (`k=9`) | 93.33% | 1.00, 0.90, 0.89* |
+| Logistic Regression | 96.67% | 1.00, 0.90, 1.00 |
+| KNN (`k=5`, without scaling) | 100.00% | 1.00, 1.00, 1.00 |
+| Gaussian Naive Bayes | 93.33% | 1.00, 0.90, 0.90 |
+| KNN Pipeline + GridSearchCV (`k=3`) | 93.33% | Not shown in the saved output |
 
-**KNN Pipeline note:** The notebook itself records the pipeline's best cross-validation accuracy (`k=9`, approximately 98.30%) and test accuracy (93.33%), but it does not print the pipeline's recall or classification report. The class-wise recall shown with an asterisk was independently recalculated by rerunning the same split and pipeline settings on the provided CSV; it should be treated as a reproduced result, not as a saved notebook output.
+**KNN Pipeline note:** With the stratified split, `GridSearchCV` selected `k=3`, with a mean cross-validation accuracy of approximately `0.9489`. The pipeline's test accuracy was `93.33%`. The saved output does not include the pipeline's class-wise recall or classification report, so those values are not reported here.
 
-Based on the saved test results, **Gaussian Naive Bayes has the highest recorded test accuracy at 96.67%** among the three primary model implementations. This conclusion applies to this particular split and setup; it does not establish that the model will always perform best on other data or splits.
+Among the results shown, the unscaled KNN model with `k=5` achieved `100.00%` test accuracy on this particular 30-observation test set. Logistic Regression achieved `96.67%`, while Gaussian Naive Bayes and the tuned KNN Pipeline each achieved `93.33%`. These results describe this specific split and setup only; they do not establish that one approach will always perform best on other data or splits. The KNN `k=5` experiment and the scaled, tuned KNN Pipeline are separate configurations and should not be treated as the same experiment.
 
 ## Technologies
 
@@ -65,6 +65,7 @@ Based on the saved test results, **Gaussian Naive Bayes has the highest recorded
 
 ## Repository Structure
 
+```text
 Machine-Learning/
 ├── IRIS_Dataset.csv
 ├── IRIS_Data_Analysis.ipynb
@@ -75,14 +76,17 @@ Machine-Learning/
 ├── K_Nearest_Neighbors_KNN.ipynb
 ├── Naive_Byes.ipynb
 └── README.md
+```
 
 ## Running the Notebooks
 
 1. Clone or download this repository.
 2. Create and activate a Python environment.
 3. Install the required packages:
-        In bash :
-        pip install pandas numpy matplotlib seaborn scikit-learn notebook ipynb
+
+   ```bash
+   pip install pandas numpy matplotlib seaborn scikit-learn notebook ipynb
+   ```
 
 4. Open the project in Jupyter Notebook or VS Code.
 5. Keep all notebooks and `IRIS_Dataset.csv` in the same project directory.
@@ -90,6 +94,15 @@ Machine-Learning/
 
 The current notebooks import variables from other notebooks using `ipynb.fs.full`. This means execution depends on the `ipynb` package and on running the notebooks in a compatible environment. If imports fail, consider refactoring shared data-preparation steps into a Python module or loading the saved dataset and repeating the split consistently in each model notebook.
 
+## Limitations and Next Steps
+
+- Revisit whether removing exact duplicate rows is appropriate for the assignment and document the rationale.
+- Use a stratified train-test split for class-proportion preservation, especially when comparing classification metrics.
+- Keep preprocessing steps that learn parameters (such as scaling or imputation) inside a scikit-learn `Pipeline`, fitted only on training data.
+- Report macro recall or weighted recall in addition to class-wise recall when a single summary score is needed.
+- Print a full evaluation report for the KNN pipeline after hyperparameter selection.
+- Consider using cross-validation consistently for model comparison and avoid drawing broad conclusions from one test split.
 
 ## Learning Takeaway
+
 This project provided practice with data inspection, cleaning, train-test splitting, classification model implementation, hyperparameter selection, and evaluation using accuracy and recall. It is part of an ongoing learning journey in Machine Learning.
